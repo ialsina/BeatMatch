@@ -5,7 +5,7 @@ from pynput import keyboard
 import sys
 import termios
 import time
-from typing import Sequence, Tuple
+from typing import Sequence, Tuple, Optional
 import warnings
 
 if os.geteuid() != 0:
@@ -65,13 +65,13 @@ def evdev_controller(device):
     # Create an InputDevice instance for the specified device
     dev = InputDevice(device)
 
-    def record_keystrokes():
+    def record_keystrokes(ref_time: Optional[float] = None):
         keystrokes = []
-        start_time = time.time()  # Time 0 (start time)
 
         set_terminal_echo(False)
-        print("Recording keystrokes... Press 'Esc' to stop.")
+        print("Recording keystrokes... Press 'Enter' to stop.")
 
+        start_time = time.time()  # Time 0 (start time)
         try:
             for event in dev.read_loop():
                 if event.type == ecodes.EV_KEY:  # Check if the event is a key event
@@ -82,7 +82,7 @@ def evdev_controller(device):
                         keystrokes.append((key_name, time.time()))
 
                     # Stop recording if 'Esc' key is pressed
-                    if key_event.keycode == 'KEY_ESC' and key_event.keystate == key_event.key_up:
+                    if key_event.keycode == 'KEY_ENTER' and key_event.keystate == key_event.key_up:
                         print("Esc pressed. Stopping...")
                         break
 
@@ -92,7 +92,7 @@ def evdev_controller(device):
 
         finally:
             set_terminal_echo(True)
-            return postprocess_strokes(keystrokes, start_time)
+            return postprocess_strokes(keystrokes, ref_time or start_time)
 
     return record_keystrokes
 
