@@ -13,10 +13,7 @@ if os.geteuid() != 0:
         "Script was not run with elevated permission."
     )
 
-try:
-    SESSION_TYPE = os.environ["XDG_SESSION_TYPE"]
-except KeyError as exc:
-    raise OSError("Session type unknown.") from exc
+SESSION_TYPE = os.environ.get("XDG_SESSION_TYPE", "wayland")
 
 def set_terminal_echo(enabled=True):
     """Enable or disable terminal echo."""
@@ -45,7 +42,6 @@ def get_keyboard_device():
     if not devices:
         raise RuntimeError("No devices found.")
     keyboard_devices = []
-    print("Input Devices:")
     for device in devices:
         if "keyboard" in InputDevice(device).name.lower():
             keyboard_devices.append(device)
