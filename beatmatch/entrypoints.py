@@ -31,7 +31,7 @@ def _get_default_output_path(song_file: str):
     return str(parent / (song_name + ".json"))
 
 
-def record(args):
+def _record_service(args):
     sound_file = args.sound_file
     if not Path(sound_file).exists():
         raise FileNotFoundError(
@@ -45,7 +45,7 @@ def record(args):
     record(sound_file, output_path)
 
 SERVICES = {
-    "record": record,
+    "record": _record_service,
 }
 
 def main():
