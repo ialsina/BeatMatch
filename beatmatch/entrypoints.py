@@ -42,7 +42,7 @@ def _record_service(args):
         if args.output is None
         else str.removesuffix(args.output, ".json") + ".json"
     )
-    record(sound_file, output_path)
+    elevate(record, sound_file, output_path)
 
 SERVICES = {
     "record": _record_service,
