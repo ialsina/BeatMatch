@@ -51,8 +51,13 @@ SERVICES = {
 def main():
     argv = sys.argv[1:]
     args = _get_parser().parse_args(argv)
-    service = args.service
-    SERVICES[service](args)
+    try:
+        service = SERVICES[args.service]
+    except KeyError:
+        _get_parser().print_help()
+        sys.exit(1)
+    service(args)
+
 
 if __name__ == "__main__":
     elevate(main)
