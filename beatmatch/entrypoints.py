@@ -2,6 +2,8 @@ from argparse import ArgumentParser
 from pathlib import Path
 import sys
 
+from command_runner.elevate import elevate
+
 from beatmatch.recorder import record
 
 def _get_parser():
@@ -53,5 +55,5 @@ def main():
     SERVICES[service](args)
 
 if __name__ == "__main__":
-    main()
+    elevate(main)
 

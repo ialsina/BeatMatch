@@ -4,10 +4,12 @@ from threading import Thread
 
 from playsound import playsound
 
-from .controller import record_keystrokes
+from .controller import get_keyboard_controller
 
 output_file = "strokes.json"
 output_path = Path(output_file).absolute()
+
+record_keystrokes = get_keyboard_controller
 
 def dump_keystrokes(path):
     keystrokes = record_keystrokes()

@@ -1,19 +1,12 @@
 from collections import defaultdict
 from evdev import categorize, InputDevice, ecodes, list_devices
 import os
-from pynput import keyboard
 import sys
 import termios
 import time
 from typing import Sequence, Tuple, Optional
 import warnings
 
-if os.geteuid() != 0:
-    raise PermissionError(
-        "Script was not run with elevated permission."
-    )
-
-SESSION_TYPE = os.environ.get("XDG_SESSION_TYPE", "wayland")
 
 def set_terminal_echo(enabled=True):
     """Enable or disable terminal echo."""
@@ -97,9 +90,13 @@ def pynput_controller():
         "Only session type 'wayland' session is implemented."
     )
 
-if SESSION_TYPE == "wayland":
-    keyboard_devivce = get_keyboard_device()
-    record_keystrokes = evdev_controller(keyboard_devivce)
-else:
-    record_keystrokes = pynput_controller()
-
+def get_keyboard_controller():
+    session_type = os.environ.get("XDG_SESSION_TYPE", "wayland")
+    if os.geteuid() != 0:
+        raise PermissionError(
+            "Script was not run with elevated permission."
+        )
+    if session_type == "wayland":
+        keyboard_devivce = get_keyboard_device()
+        return evdev_controller(keyboard_devivce)
+    return pynput_controller()
