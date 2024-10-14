@@ -5,6 +5,7 @@ import sys
 from command_runner.elevate import elevate
 
 from beatmatch.recorder import record
+from beatmatch.player import play
 
 def _get_parser():
     parser = ArgumentParser()
@@ -20,6 +21,23 @@ def _get_parser():
         type=str,
         help="Path for the output json document with the keystrokes.",
         default=None,
+    )
+    play_parser = subparsers.add_parser("play")
+    play_parser.add_argument(
+        "sound_file",
+        type=str,
+        help="Path for the sound file to be processed."
+    )
+    play_parser.add_argument(
+        "strokes_file",
+        type=str,
+        help="Path for the already processed strokes."
+    )
+    play_parser.add_argument(
+        "-r", "--refresh-rate",
+        type=float,
+        help="Seconds after each loop in the strokes player",
+        default=0.001,
     )
     return parser
 
@@ -44,8 +62,20 @@ def _record_service(args):
     )
     elevate(record, sound_file, output_path)
 
+def _play_service(args):
+    sound_file = args.sound_file
+    strokes_file = args.strokes_file
+    refresh_rate = args.refresh_rate
+    for name, file in zip(["Sound", "Strokes"], [sound_file, strokes_file]):
+        if not Path(file).exists():
+            raise FileNotFoundError(
+                f"{name} path {file} not found."
+            )
+    play(sound_file, strokes_file, refresh=refresh_rate)
+
 SERVICES = {
     "record": _record_service,
+    "play": _play_service,
 }
 
 def main():
